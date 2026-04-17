@@ -1,7 +1,6 @@
 package com.genesis.app.data.api
 
-import com.genesis.app.data.model.CreationRequest
-import com.genesis.app.data.model.CreationResponse
+import com.genesis.app.data.model.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

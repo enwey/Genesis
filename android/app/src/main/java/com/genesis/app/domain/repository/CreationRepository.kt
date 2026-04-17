@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface CreationRepository {
     suspend fun generateAsset(request: CreationRequest): Flow<Resource<CreationResponse>>
+    fun getLastCreation(): Flow<CreationResponse?>
 }

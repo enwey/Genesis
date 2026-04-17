@@ -17,14 +17,40 @@ class LoginViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
 
-    private val _loginState = MutableStateFlow<Resource<LoginResponse>>(Resource.Loading())
-    val loginState: StateFlow<Resource<LoginResponse>> = _loginState
+    private val _uiState = MutableStateFlow(LoginUiState())
+    val uiState: StateFlow<LoginUiState> = _uiState
 
-    fun login(email: String, password: String) {
+    fun onEvent(event: LoginUiEvent) {
+        when (event) {
+            is LoginUiEvent.OnEmailChanged -> _uiState.value = _uiState.value.copy(email = event.email)
+            is LoginUiEvent.OnPasswordChanged -> _uiState.value = _uiState.value.copy(password = event.password)
+            LoginUiEvent.OnLoginClicked -> login()
+        }
+    }
+
+    private fun login() {
         viewModelScope.launch {
-            repository.login(LoginRequest(email, password)).collect {
-                _loginState.value = it
+            repository.login(LoginRequest(_uiState.value.email, _uiState.value.password)).collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> _uiState.value = _uiState.value.copy(isLoading = true)
+                    is Resource.Success -> _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
+                    is Resource.Error -> _uiState.value = _uiState.value.copy(isLoading = false, error = resource.message)
+                }
             }
         }
     }
+}
+
+data class LoginUiState(
+    val email: String = "test@genesis.com", // 默認測試郵箱
+    val password: String = "password123", // 默認測試密碼
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
+    val error: String? = null
+)
+
+sealed class LoginUiEvent {
+    data class OnEmailChanged(val email: String) : LoginUiEvent()
+    data class OnPasswordChanged(val password: String) : LoginUiEvent()
+    object OnLoginClicked : LoginUiEvent()
 }

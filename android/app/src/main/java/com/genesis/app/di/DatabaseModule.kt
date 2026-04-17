@@ -29,4 +29,9 @@ object DatabaseModule {
     fun provideFeedDao(database: GenesisDatabase): FeedDao {
         return database.feedDao()
     }
+
+    @Provides
+    fun provideCreationDao(database: GenesisDatabase): com.genesis.app.data.local.dao.CreationDao {
+        return database.creationDao()
+    }
 }

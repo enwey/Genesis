@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
@@ -40,7 +40,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             GenesisTheme {
                 val snackbarHostState = remember { SnackbarHostState() }
-                val scope = rememberCoroutineScope()
                 var isLoggedIn by remember { mutableStateOf(false) }
 
                 // 監聽 WebSocket
@@ -80,7 +79,7 @@ fun MainContent() {
         TabItem("Create", Icons.Default.Add),
         TabItem("Bazaar", Icons.Default.ShoppingCart),
         TabItem("Social", Icons.Default.Person),
-        TabItem("Wallet", Icons.Default.List)
+        TabItem("Wallet", Icons.AutoMirrored.Filled.List)
     )
 
     Scaffold(

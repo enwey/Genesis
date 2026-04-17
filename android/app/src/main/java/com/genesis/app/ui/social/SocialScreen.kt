@@ -18,37 +18,29 @@ import coil.compose.AsyncImage
 import com.genesis.app.data.model.FeedItem
 import com.genesis.app.util.Resource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialScreen(
     viewModel: SocialViewModel = hiltViewModel()
 ) {
-    val feedState by viewModel.feedState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(text = "Social Feed", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        when (feedState) {
-            is Resource.Success -> {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(title = { Text("Social Feed") })
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+            if (uiState.isLoading && uiState.feedItems.isEmpty()) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else if (uiState.error != null) {
+                Text(text = uiState.error!!, color = MaterialTheme.colorScheme.error, modifier = Modifier.align(Alignment.Center))
+            } else {
                 FeedList(
-                    items = feedState.data ?: emptyList(),
-                    onLike = { viewModel.likeAsset(it) },
-                    onFavorite = { viewModel.favoriteAsset(it) }
+                    items = uiState.feedItems,
+                    onLike = { viewModel.onEvent(SocialUiEvent.OnLikeClicked(it)) },
+                    onFavorite = { viewModel.onEvent(SocialUiEvent.OnFavoriteClicked(it)) }
                 )
-            }
-            is Resource.Error -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = feedState.message ?: "Error", color = MaterialTheme.colorScheme.error)
-                }
-            }
-            is Resource.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
             }
         }
     }

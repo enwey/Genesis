@@ -8,6 +8,25 @@ from app.models.asset import TradeRequestStatus
 
 router = APIRouter()
 
+@router.get("/assets", response_model=List[schemas.Asset])
+async def get_market_assets(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    query: str = "",
+    skip: int = 0,
+    limit: int = 50,
+) -> Any:
+    """獲取大集市資產列表"""
+    stmt = select(models.Asset).where(models.Asset.status == "approved")
+    
+    if query:
+        # 支持在 prompt 或 attributes 中搜索
+        stmt = stmt.where(models.Asset.prompt.ilike(f"%{query}%"))
+    
+    stmt = stmt.offset(skip).limit(limit)
+    result = await db.execute(stmt)
+    return result.scalars().all()
+
 @router.post("/{asset_id}/list")
 async def list_asset_for_sale(
     *,

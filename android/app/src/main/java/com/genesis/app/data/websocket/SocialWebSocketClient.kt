@@ -23,8 +23,7 @@ class SocialWebSocketClient @Inject constructor(
 
     fun connect(token: String) {
         val request = Request.Builder()
-            .url("wss://api.genesis-platform.com/ws/social")
-            .addHeader("Authorization", "Bearer $token")
+            .url("ws://10.0.2.2:8000/ws/social?token=$token")
             .build()
 
         webSocket = okHttpClient.newWebSocket(request, object : WebSocketListener() {

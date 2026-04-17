@@ -1,5 +1,6 @@
 package com.genesis.app.di
 
+import com.genesis.app.data.repository.AuthRepositoryImpl
 import com.genesis.app.data.repository.BazaarRepositoryImpl
 import com.genesis.app.data.repository.CreationRepositoryImpl
 import com.genesis.app.data.repository.SocialRepositoryImpl

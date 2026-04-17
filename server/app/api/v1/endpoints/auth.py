@@ -13,14 +13,15 @@ router = APIRouter()
 
 @router.post("/login", response_model=schemas.Token)
 async def login(
+    *,
     db: AsyncSession = Depends(deps.get_db),
-    form_data: OAuth2PasswordRequestForm = Depends()
+    login_in: schemas.UserLogin
 ) -> Any:
     """
-    OAuth2 compatible token login, get an access token for future requests
+    JSON login, get an access token for future requests
     """
     user = await crud.user.authenticate(
-        db, email=form_data.username, password=form_data.password
+        db, email=login_in.email, password=login_in.password
     )
     if not user:
         raise HTTPException(
@@ -34,10 +35,11 @@ async def login(
         )
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return {
-        "access_token": security.create_access_token(
+        "token": security.create_access_token(
             user.id, expires_delta=access_token_expires
         ),
-        "token_type": "bearer",
+        "userId": str(user.id),
+        "username": user.username,
     }
 
 @router.post("/register", response_model=schemas.User)

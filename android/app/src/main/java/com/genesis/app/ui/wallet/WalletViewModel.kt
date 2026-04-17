@@ -16,18 +16,57 @@ class WalletViewModel @Inject constructor(
     private val repository: WalletRepository
 ) : ViewModel() {
 
-    private val _balanceState = MutableStateFlow<Resource<WalletResponse>>(Resource.Loading())
-    val balanceState: StateFlow<Resource<WalletResponse>> = _balanceState
+    private val _uiState = MutableStateFlow(WalletUiState())
+    val uiState: StateFlow<WalletUiState> = _uiState
 
     init {
         fetchBalance()
     }
 
-    fun fetchBalance() {
+    fun onEvent(event: WalletUiEvent) {
+        when (event) {
+            WalletUiEvent.OnRefresh -> fetchBalance()
+            is WalletUiEvent.OnBuyManaClicked -> buyMana(event.amount)
+        }
+    }
+
+    private fun fetchBalance() {
         viewModelScope.launch {
-            repository.getBalance().collect {
-                _balanceState.value = it
+            repository.getBalance().collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            wallet = resource.data,
+                            error = null
+                        )
+                    }
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = resource.message
+                        )
+                    }
+                }
             }
         }
     }
+
+    private fun buyMana(@Suppress("UNUSED_PARAMETER") amount: Int) {
+        // Implement Google Play Billing flow here
+    }
+}
+
+data class WalletUiState(
+    val isLoading: Boolean = false,
+    val wallet: WalletResponse? = null,
+    val error: String? = null
+)
+
+sealed class WalletUiEvent {
+    object OnRefresh : WalletUiEvent()
+    data class OnBuyManaClicked(val amount: Int) : WalletUiEvent()
 }

@@ -18,6 +18,10 @@ class UserCreate(UserBase):
 class UserUpdate(UserBase):
     password: Optional[str] = None
 
+class UserLogin(BaseModel):
+    email: str
+    password: str
+
 class UserInDBBase(UserBase):
     id: Optional[int] = None
     mana: int

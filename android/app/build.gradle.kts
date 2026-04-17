@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains-kotlin-android)
+    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
 }
@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.room.runtime)
@@ -68,7 +69,7 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.coil.compose)
     implementation(libs.billing.ktx)
-    implementation(libs.sceneview.compose)
+    // implementation(libs.sceneview.compose) // Temporarily disabled
     
     // Hilt
     implementation(libs.hilt.android)
